@@ -17,8 +17,26 @@
 from typing import List
 
 def sort_by_ext(files: List[str]) -> List[str]:
-    # your code here
-    return files
+    list_of_no_extentions = list()
+    list_of_normal_files = list()
+    files_dict = {}
+    for file in files:
+        splitted = file.split('.')
+        if splitted[-2] == '' or splitted[-1] == '':
+            list_of_no_extentions.append(file)
+        else:
+            name = '.'.join(splitted[:-1])
+            extention = splitted[-1]
+            if extention not in files_dict.keys():
+                files_dict[extention] = list()
+            files_dict[extention].append(name)
+
+    for key in sorted(files_dict.keys()):
+        for name in sorted(files_dict[key]):
+            list_of_normal_files.append(name + '.' + key)
+    list_of_no_extentions.sort()
+
+    return list_of_no_extentions + list_of_normal_files
 
 
 if __name__ == '__main__':
