@@ -6,9 +6,19 @@
 #
 # Output: The same date and time, but in a more readable format
 
+from datetime import datetime as dt
+
+
 def date_time(time: str) -> str:
-    # replace this for solution
-    return time
+    date_and_time = dt.strptime(time, "%d.%m.%Y %H:%M")
+    month = dt.strftime(date_and_time, "%B")
+    hour = f'{date_and_time.hour} hour'
+    if date_and_time.hour != 1:
+        hour += 's'
+    minute = f'{date_and_time.minute} minute'
+    if date_and_time.minute != 1:
+        minute += 's'
+    return f'{date_and_time.day} {month} {date_and_time.year} year {hour} {minute}'
 
 
 if __name__ == "__main__":
