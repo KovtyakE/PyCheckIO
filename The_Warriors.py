@@ -45,15 +45,32 @@
 
 
 class Warrior:
+    is_alive = True
+
     def __init__(self):
+        self.health = 50
+        self.attack = 5
+
+    def check_is_alive(self):
+        if self.health <= 0:
+            self.is_alive = False
+        return self.is_alive
 
 
 class Knight(Warrior):
-    pass
+    def __init__(self):
+        super().__init__()
+        self.attack = 7
 
 
 def fight(unit_1, unit_2):
-    return 0
+    while unit_1.check_is_alive() and unit_2.check_is_alive():
+        unit_2.health -= unit_1.attack
+        if unit_2.check_is_alive():
+            unit_1.health -= unit_2.attack
+    if unit_1.check_is_alive() and unit_2.check_is_alive() is not True:
+        return True
+    return False
 
 
 if __name__ == '__main__':
@@ -75,6 +92,3 @@ if __name__ == '__main__':
     assert carl.is_alive == False
 
     print("Coding complete? Let's try tests!")
-
-
-
