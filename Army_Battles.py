@@ -13,6 +13,62 @@
 # Note that army 1 have the advantage to start every fight!
 
 
+class Warrior:
+    def __init__(self):
+        self.health = 50
+        self.attack = 5
+        self.is_alive = True
+
+    def check_is_alive(self):
+        if self.health <= 0:
+            self.is_alive = False
+        return self.is_alive
+
+
+class Knight(Warrior):
+    def __init__(self):
+        super().__init__()
+        self.attack = 7
+
+
+class Army:
+    def __init__(self):
+        self.army = list()
+
+    def add_units(self, unit, count):
+        for iteration in range(count):
+            if unit.__name__ == 'Knight':
+                self.army.append(Knight())
+            elif unit.__name__ == 'Warrior':
+                self.army.append(Warrior())
+
+
+class Battle:
+    def fight(self, army1, army2):
+        while len(army1.army) != 0 and len(army2.army) != 0:
+            for unit1 in army1.army:
+                for unit2 in army2.army:
+                    if fight(unit_1=unit1, unit_2=unit2):
+                        army2.army.remove(unit2)
+                        continue
+                    else:
+                        break
+                if not unit1.is_alive:
+                    army1.army.remove(unit1)
+            if len(army1.army) == 0:
+                return False
+            elif len(army2.army) == 0:
+                return True
+
+
+def fight(unit_1, unit_2):
+    while unit_1.check_is_alive() and unit_2.check_is_alive():
+        unit_2.health -= unit_1.attack
+        if unit_2.check_is_alive():
+            unit_1.health -= unit_2.attack
+    return unit_1.check_is_alive()
+
+
 if __name__ == '__main__':
     # These "asserts" using only for self-checking and not necessary for auto-testing
 
