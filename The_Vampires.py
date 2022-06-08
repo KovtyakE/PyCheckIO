@@ -26,6 +26,7 @@ class Warrior:
         self.health = 50
         self.attack = 5
         self.defense = 0
+        self.vampirism = 0
         self.is_alive = True
 
     def check_is_alive(self):
@@ -55,6 +56,14 @@ class Rookie(Warrior):
         self.attack = 1
 
 
+class Vampire(Warrior):
+    def __init__(self):
+        super().__init__()
+        self.health = 40
+        self.attack = 4
+        self.vampirism = 0.5
+
+
 class Army:
     def __init__(self):
         self.army = list()
@@ -63,6 +72,7 @@ class Army:
             'Warrior': Warrior,
             'Defender': Defender,
             'Rookie': Rookie,
+            'Vampire': Vampire,
         }
 
     def add_units(self, unit, count):
@@ -75,29 +85,25 @@ class Army:
 class Battle:
     def fight(self, army1, army2):
         while len(army1.army) != 0 and len(army2.army) != 0:
-            print(army1.army, army2.army)
-            for unit1 in army1.army:
-                for unit2 in army2.army:
-                    if fight(unit_1=unit1, unit_2=unit2):
-                        army2.army.remove(unit2)
-                        continue
-                    else:
-                        break
-                if not unit1.is_alive:
-                    army1.army.remove(unit1)
+            if fight(unit_1=army1.army[0], unit_2=army2.army[0]):
+                army2.army.remove(army2.army[0])
+            if not army1.army[0].is_alive:
+                army1.army.remove(army1.army[0])
             if len(army1.army) == 0:
-                print(0)
                 return False
             elif len(army2.army) == 0:
-                print(1)
                 return True
 
 
 def fight(unit_1, unit_2):
     while unit_1.check_is_alive() and unit_2.check_is_alive():
         unit_2.health -= (unit_1.attack - unit_2.defense if unit_2.defense < unit_1.attack else 0)
+        unit_1.health += int((unit_1.attack - unit_2.defense) * unit_1.vampirism if
+                             unit_2.defense < unit_1.attack else 0)
         if unit_2.check_is_alive():
             unit_1.health -= (unit_2.attack - unit_1.defense if unit_1.defense < unit_2.attack else 0)
+            unit_2.health += int((unit_2.attack - unit_1.defense) * unit_2.vampirism if
+                                 unit_1.defense < unit_2.attack else 0)
     return unit_1.check_is_alive()
 
 
