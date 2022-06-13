@@ -15,7 +15,7 @@
 
 class Warrior:
     def __init__(self):
-        self.health = 50
+        self.health, self.max_hp = 50, 50
         self.attack = 5
         self.defense = 0
         self.vampirism = 0
@@ -38,21 +38,21 @@ class Defender(Warrior):
     def __init__(self):
         super().__init__()
         self.attack = 3
-        self.health = 60
+        self.health, self.max_hp = 60, 60
         self.defense = 2
 
 
 class Rookie(Warrior):
     def __init__(self):
         super().__init__()
-        self.health = 50
+        self.health, self.max_hp = 50, 50
         self.attack = 1
 
 
 class Vampire(Warrior):
     def __init__(self):
         super().__init__()
-        self.health = 40
+        self.health, self.max_hp = 40, 40
         self.attack = 4
         self.vampirism = 0.5
 
@@ -60,9 +60,20 @@ class Vampire(Warrior):
 class Lancer(Warrior):
     def __init__(self):
         super().__init__()
-        self.health = 50
         self.attack = 6
         self.attack_range = 2
+
+
+class Healer(Warrior):
+    def __init__(self):
+        super().__init__()
+        self.health, self.max_hp = 60, 60
+        self.attack = 0
+        self.heal_value = 2
+
+    def heal(self, healing_target):
+        healing_target.health += self.heal_value if healing_target.health <= healing_target.max_hp - self.heal_value \
+            else healing_target.max_hp - healing_target.health
 
 
 class Army:
@@ -75,6 +86,7 @@ class Army:
             'Rookie': Rookie,
             'Vampire': Vampire,
             'Lancer': Lancer,
+            'Healer': Healer,
         }
 
     def add_units(self, unit, count):
@@ -86,17 +98,17 @@ class Army:
 
 class Battle:
     def fight(self, army1, army2):
-        while len(army1.army) != 0 and len(army2.army) != 0:
-            unit_behind_1 = None
-            unit_behind_2 = None
-            if len(army2.army) > 1 and army1.army[0].attack_range == 2:
-                unit_behind_2 = army2.army[1]
-            if len(army1.army) > 1 and army2.army[0].attack_range == 2:
-                unit_behind_1 = army1.army[1]
+        while len(army1.army) > 0 and len(army2.army) > 0:
+            while len(army1.army) > 1 and len(army2.army) > 1:
+                if fight(unit_1=army1.army[0],
+                         unit_2=army2.army[0],
+                         unit_behind_1=army1.army[1],
+                         unit_behind_2=army2.army[1]):
+                    army2.army.remove(army2.army[0])
+                else:
+                    army1.army.remove(army1.army[0])
             if fight(unit_1=army1.army[0],
-                     unit_2=army2.army[0],
-                     unit_behind_1=unit_behind_1,
-                     unit_behind_2=unit_behind_2):
+                     unit_2=army2.army[0]):
                 army2.army.remove(army2.army[0])
             else:
                 army1.army.remove(army1.army[0])
@@ -116,12 +128,16 @@ def attack(attacking_unit, defending_unit, attack_multiplier=float(1)):
 def fight(unit_1, unit_2, unit_behind_1=None, unit_behind_2=None):
     while unit_1.check_is_alive() and unit_2.check_is_alive():
         attack(attacking_unit=unit_1, defending_unit=unit_2, attack_multiplier=1)
-        if unit_behind_2:
+        if unit_behind_2 and isinstance(unit_1, Lancer):
             attack(attacking_unit=unit_1, defending_unit=unit_behind_2, attack_multiplier=0.5)
+        if isinstance(unit_behind_1, Healer):
+            unit_behind_1.heal(unit_1)
         if unit_2.check_is_alive():
             attack(attacking_unit=unit_2, defending_unit=unit_1, attack_multiplier=1)
-            if unit_behind_1:
+            if unit_behind_1 and isinstance(unit_2, Lancer):
                 attack(attacking_unit=unit_2, defending_unit=unit_behind_1, attack_multiplier=0.5)
+            if isinstance(unit_behind_2, Healer):
+                unit_behind_2.heal(unit_2)
     return unit_1.check_is_alive()
 
 
