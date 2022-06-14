@@ -109,10 +109,23 @@ class Battle:
                 army2.army.remove(army2.army[0])
             else:
                 army1.army.remove(army1.army[0])
-            if len(army1.army) == 0:
-                return False
-            elif len(army2.army) == 0:
-                return True
+        return len(army1.army) > 0
+
+    def straight_fight(self, army1, army2):
+        while len(army1.army) > 0 and len(army2.army) > 0:
+            dead_units = list()
+            for count in range(min(len(army1.army), len(army2.army))):
+                fight(army1.army[count], army2.army[count])
+                if army1.army[count].is_alive:
+                    dead_units.append(army2.army[count])
+                else:
+                    dead_units.append(army1.army[count])
+            for unit in dead_units:
+                if unit in army1.army:
+                    army1.army.remove(unit)
+                elif unit in army2.army:
+                    army2.army.remove(unit)
+        return len(army1.army) > 0
 
 
 def attack(attacking_unit, defending_unit, attack_multiplier=float(1)):
@@ -213,9 +226,9 @@ if __name__ == '__main__':
     army_6.add_units(Warrior, 6)
     army_6.add_units(Lancer, 5)
 
-battle = Battle()
+    battle = Battle()
 
-assert battle.fight(my_army, enemy_army) == False
-assert battle.fight(army_3, army_4) == True
-assert battle.straight_fight(army_5, army_6) == False
+    assert battle.fight(my_army, enemy_army) == False
+    assert battle.fight(army_3, army_4) == True
+    assert battle.straight_fight(army_5, army_6) == False
 print("Coding complete? Let's try tests!")
